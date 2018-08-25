@@ -4,6 +4,10 @@ import numpy as np
 
 openings_tree = dict()
 
+all_the_openings = dict()
+
+# total_history = []
+
 df = pd.read_csv('games.csv')
 print(len(df))
 
@@ -55,11 +59,11 @@ def generateOneMoveOpenings():
     print(openings_tree)
 
 
-
 print('hi there')
-# generateOneMoveOpenings()
-print(getMovesFromName("Queen's Pawn", 2))
 
+# generateOneMoveOpenings()
+
+# print(getMovesFromName("Queen's Pawn", 2))
 
 
 def generateTwoMoveOpenings():
@@ -76,8 +80,9 @@ def generateTwoMoveOpenings():
             if o_moves.startswith(o_move) and not hasattr(o, d): # We don't need the .str startswith method, because it's already a string!
                 v[d] = dict()
                 v[d]['move'] = o_moves
-            # We'll need an else here in order to capture those 2-move openings that don't have a 1-move named start (if such there be).
-            # Basically, we need to be thoughtful about how to store this data in the most efficient way.
+        # We'll need an else here in order to capture those 2-move openings that don't have a 1-move named start (if such there be).
+        # To do that, we should add a Break inside the If statement.
+        # Basically, we need to be thoughtful about how to store this data in the most efficient way.
 
     print("TREE 2: ", openings_tree)
 
@@ -110,11 +115,70 @@ def findLinesStartingWith(open):
     # print(result)
     return result
 
-res = findLinesStartingWith('d4')
-print(res)
+# res = findLinesStartingWith('d4')
+# print(res)
 
 
 
+
+print('ahoy')
+
+
+def getHistory(line): # e.g. line = "e4 e5 Nf3 d6 d4"
+    num_moves = len(line.split())
+    # print(num_moves)
+    line_name = df[df['opening_moves_text'] == line]['opening_name'].tolist()[0]
+    # print('line name is: ', line_name)
+
+    history = []
+
+    for i in range(1, num_moves): # e.g. 1, 2, 3, 4
+        moves = line.split()[ : i]
+        # print('moves are: ', moves)
+        move_str = " ".join(moves)
+        # print('move_str is: ', move_str)
+        res = False
+        if len(df[df['opening_moves_text'] == move_str]) > 0:
+            res = True
+
+        if res:
+            name = df[df['opening_moves_text'] == move_str]['opening_name'].tolist()[0]
+            # print('name is: ', name)
+            history.append(name)
+        else:
+            history.append('nada nada')
+
+    return history
+
+
+getHistory("e4 e5 Nf3 d6 d4")
+
+# Populates all_the_openings:
+def getUniqueOpenings():
+    for i, row in df.iterrows():
+        attr = row['opening_moves_text']
+        if not hasattr(all_the_openings, attr):
+            all_the_openings[attr] = dict()
+            all_the_openings[attr]['name'] = row['opening_name']
+        # print(row)
+
+
+getUniqueOpenings()
+print(len(all_the_openings))
+print(len([x for x in all_the_openings if len(x.split()) < 3]))
+# print(all_the_openings)
+
+
+# Refers to all_the_openings
+def getTotalHistory():
+    # should use defaultdict():
+    for o, v in all_the_openings.items():
+        if len(o.split()) < 3:
+            v['opening_hist'] = getHistory(o)
+
+
+getTotalHistory()
+print(all_the_openings)
 
 
 
