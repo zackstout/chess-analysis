@@ -1,41 +1,4 @@
 
-console.log('yo');
-
-nextMoves = [];
-
-function getNextMoves(start) {
-  console.log('start is :', start.trim());
-  return $.ajax({
-    type: "GET",
-    url: "/allLines",
-    // success: function(data) {
-    //
-    //   var all_with_start = [];
-    //   var moves_array, relevant_moves;
-    //
-    //   data.forEach(d => {
-    //     moves_array = d.moves.split(" ");
-    //     relevant_moves = moves_array.slice(0, 3);
-    //
-    //     if (relevant_moves.join(" ") == start) {
-    //       // counter++;
-    //       all_with_start.push(d.moves);
-    //     }
-    //
-    //   });
-    //
-    //   var next_moves = all_with_start.filter(s => {
-    //     return s.split(" ").length === relevant_moves.length + 1;
-    //   });
-    //   console.log(next_moves);
-    //
-    //   // This doesn't work...:
-    //   nextMoves = next_moves;
-    // }
-  });
-}
-
-
 // Huh...so how do we do this with Vue?
 $(document).ready(function() {
   console.log('hi hi');
@@ -47,53 +10,75 @@ $(document).ready(function() {
       next_out: []
     },
     methods: {
+      // Handles click of the "Get Next Moves" button:
       getNext: function() {
         console.log(this.next_in);
-        // console.log(getNextMoves(this.next_in));
-        var next = this.next_in;
 
-        getNextMoves(this.next_in).then((res) => {
+        $.ajax({
+          type: "GET",
+          url: "/allLines"
+        })
+        .then((res) => {
 
-          // console.log(res);
-
-          var start = next;
+          var start = this.next_in;
+          var start_array = this.next_in.split(" ");
 
           var all_with_start = [];
-          var moves_array, relevant_moves;
+          var relevant_moves;
 
           res.forEach(d => {
-            moves_array = d.moves.split(" ");
-            relevant_moves = moves_array.slice(0, 3);
+            var moves_array = d.moves.split(" ");
+            relevant_moves = moves_array.slice(0, start_array.length);
 
             if (relevant_moves.join(" ") == start) {
-              // counter++;
               all_with_start.push(d.moves);
             }
 
           });
 
-          var next_moves = all_with_start.filter(s => {
-            return s.split(" ").length === relevant_moves.length + 1;
-          });
+          var next_moves;
+          var i=1;
+
+          // Eh, seems to be working...:
+          while (i < 10) {
+            next_moves = all_with_start.filter(s => {
+              return s.split(" ").length === relevant_moves.length + i;
+            });
+
+            if (next_moves.length > 0) {
+              break;
+            } else {
+              i++;
+            }
+          }
+
+          // var next_moves = all_with_start.filter(s => {
+          //   return s.split(" ").length === relevant_moves.length + 1;
+          // });
+          //
+          // // hideous -- needs to be a While loop (with some exit condition, like 10):
+          // if (next_moves.length === 0) {
+          //   next_moves = all_with_start.filter(s => {
+          //     return s.split(" ").length === relevant_moves.length + 2;
+          //   });
+          // }
+
           console.log(next_moves);
 
-          // This doesn't work...:
-          nextMoves = next_moves;
-
           // Funny, it actually *needs* to be an arrow function to preserve reference of 'this':
-          this.next_out = nextMoves;
+          this.next_out = next_moves;
         });
 
       }
     }
   });
-  //
-  // var next_out = new Vue({
-  //   el: '#next-output',
-  //   data: {
-  //     output: nextMoves
-  //   }
-  // });
-
 
 });
+
+
+
+
+
+
+
+// chessin
