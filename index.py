@@ -6,6 +6,7 @@ openings_tree = dict()
 
 all_the_openings = dict()
 
+
 # total_history = []
 
 df = pd.read_csv('games.csv')
@@ -186,7 +187,7 @@ filtered_openings = []
 
 for k, v in all_the_openings.items():
     print(v)
-    # Huh...maybe we're only looking at a copy of the unmodified original...?
+    # Huh...maybe we're only looking at a copy of the unmodified original...?cd
     if hasattr(v, 'opening_hist'):
         filtered_openings.append((k, v))
 

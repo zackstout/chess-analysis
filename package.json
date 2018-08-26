@@ -1,0 +1,27 @@
+{
+  "name": "chess-games",
+  "version": "1.0.0",
+  "description": "I stumbled upon this [dataset](https://www.kaggle.com/datasnaek/chess) of previously-played chess games. My first idea is to build a tree of possible openings and variations.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zackstout/chess-analysis.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zackstout/chess-analysis/issues"
+  },
+  "homepage": "https://github.com/zackstout/chess-analysis#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "fast-csv": "^2.4.1",
+    "mongoose": "^5.2.9"
+  }
+}
