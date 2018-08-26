@@ -7,7 +7,7 @@ $(document).ready(function() {
     type: "GET",
     url: "/allLines",
     success: function(data) {
-      // console.log(data);
+      console.log(data);
 
       var start = "e4 e5 Nf3";
       var counter = 0;
@@ -30,6 +30,10 @@ $(document).ready(function() {
         // }
       });
       console.log(counter, all_with_start);
+
+      console.log(all_with_start.filter(s => {
+        return s.split(" ").length === 3;
+      }));
     }
   });
 });
