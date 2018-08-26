@@ -1,39 +1,99 @@
+
 console.log('yo');
 
+nextMoves = [];
+
+function getNextMoves(start) {
+  console.log('start is :', start.trim());
+  return $.ajax({
+    type: "GET",
+    url: "/allLines",
+    // success: function(data) {
+    //
+    //   var all_with_start = [];
+    //   var moves_array, relevant_moves;
+    //
+    //   data.forEach(d => {
+    //     moves_array = d.moves.split(" ");
+    //     relevant_moves = moves_array.slice(0, 3);
+    //
+    //     if (relevant_moves.join(" ") == start) {
+    //       // counter++;
+    //       all_with_start.push(d.moves);
+    //     }
+    //
+    //   });
+    //
+    //   var next_moves = all_with_start.filter(s => {
+    //     return s.split(" ").length === relevant_moves.length + 1;
+    //   });
+    //   console.log(next_moves);
+    //
+    //   // This doesn't work...:
+    //   nextMoves = next_moves;
+    // }
+  });
+}
+
+
+// Huh...so how do we do this with Vue?
 $(document).ready(function() {
   console.log('hi hi');
 
-  $.ajax({
-    type: "GET",
-    url: "/allLines",
-    success: function(data) {
-      console.log(data);
+  var next_in = new Vue({
+    el: '#next-input',
+    data: {
+      next_in: 'e4 e5 Nf3',
+      next_out: []
+    },
+    methods: {
+      getNext: function() {
+        console.log(this.next_in);
+        // console.log(getNextMoves(this.next_in));
+        var next = this.next_in;
 
-      var start = "e4 e5 Nf3";
-      var counter = 0;
-      var all_with_start = [];
+        getNextMoves(this.next_in).then((res) => {
 
-      data.forEach(d => {
-        var moves_array = d.moves.split(" ");
-        var relevant_moves = moves_array.slice(0, 3);
+          // console.log(res);
 
-        if (relevant_moves.join(" ") == start) {
-          counter++;
-          all_with_start.push(d.moves);
-        }
+          var start = next;
 
+          var all_with_start = [];
+          var moves_array, relevant_moves;
 
-        // Yeah, we do have dupes in there...
-        // if (d.moves == start) {
-        //   counter++;
-        //   all_with_start.push(d.moves)
-        // }
-      });
-      console.log(counter, all_with_start);
+          res.forEach(d => {
+            moves_array = d.moves.split(" ");
+            relevant_moves = moves_array.slice(0, 3);
 
-      console.log(all_with_start.filter(s => {
-        return s.split(" ").length === 3;
-      }));
+            if (relevant_moves.join(" ") == start) {
+              // counter++;
+              all_with_start.push(d.moves);
+            }
+
+          });
+
+          var next_moves = all_with_start.filter(s => {
+            return s.split(" ").length === relevant_moves.length + 1;
+          });
+          console.log(next_moves);
+
+          // This doesn't work...:
+          nextMoves = next_moves;
+
+          // Funny, it actually *needs* to be an arrow function to preserve reference of 'this':
+          this.next_out = nextMoves;
+        });
+
+      }
     }
   });
+  //
+  // var next_out = new Vue({
+  //   el: '#next-output',
+  //   data: {
+  //     output: nextMoves
+  //   }
+  // });
+
+
 });

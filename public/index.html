@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <title>chess</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+
   <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -10,6 +12,16 @@
   <script src="client.js" charset="utf-8"></script>
 </head>
 <body>
+
+  <div id="next-input">
+    <input v-model="next_in">
+    <button v-on:click="getNext">Get Next Moves</button>
+
+    <div>
+      {{ next_out }}
+    </div>
+  </div>
+
 
 </body>
 </html>
