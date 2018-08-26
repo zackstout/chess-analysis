@@ -8,6 +8,58 @@ var db = require('../models');
 
 // ========================================================================================================================
 
+function generateFullDB() {
+  var stream = fs.createReadStream('games.csv');
+  var csvStream = csv()
+  .on("data", function(data){
+    var rated = data[1];
+    var num_turns = data[4];
+    var winner = data[6];
+    var victory_status = data[5];
+    var white_rating = data[9];
+    var black_rating = data[11];
+    var moves = data[12];
+    // var opening = 0;
+    // rated, num_turns, winner, victory_status, white_rating, black_rating, moves, opening
+    db.Opening.find({ name: data[14] })
+    .then(function(res) {
+      console.log("res is ...", res[0]._id);
+
+      db.Game.create({
+        rated: rated == 'TRUE' ? true : false,
+        num_turns: parseInt(num_turns), // parseInt unneeded
+        winner: winner,
+        victory_status: victory_status,
+        white_rating: white_rating,
+        black_rating: black_rating,
+        moves: moves,
+        // opening: res[0]._id
+      })
+      .then(function(result) {
+        console.log(result);
+        return db.Opening.findOneAndUpdate({ _id: res[0]._id }, { $push: { games: result._id } }, { new: true });
+
+      })
+      .catch(function(error) {
+        console.log(error.message);
+      });
+
+    })
+    .catch(function(err) {
+      console.log(err.message);
+    });
+  })
+  .on("end", function(){
+    console.log("done");
+  });
+
+  stream.pipe(csvStream);
+
+}
+
+
+
+
 function generateDB() {
   console.log('generating db...');
   var stream = fs.createReadStream('games.csv'); // Huh, is this directing from the root?
@@ -54,11 +106,11 @@ function generateDB() {
   stream.pipe(csvStream);
 }
 
-// generateDB();
+// generateFullDB();
 
 // ========================================================================================================================
 
-// What?! There are exactly 4000 unique openings?!
+// What?! There are exactly 4000 unique openings?! -- ...No
 router.get('/allLines', (req, res) => {
   db.Opening.find({})
   .then(data => {
@@ -68,5 +120,20 @@ router.get('/allLines', (req, res) => {
     res.sendStatus(501);
   });
 });
+
+
+router.get('/allLinesWithOpening/:opening', (req, res) => {
+  console.log('hitting with ', req.params.opening);
+  db.Opening.findById(req.params.opening)
+  .populate('games')
+  .exec((err, data) => {
+    if (err) res.sendStatus(501);
+    else res.send(data);
+  });
+  // .catch(err => {
+  //   res.sendStatus(501);
+  // });
+});
+
 
 module.exports = router;

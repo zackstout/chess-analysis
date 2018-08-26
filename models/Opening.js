@@ -11,6 +11,12 @@ var OpeningSchema = new Schema({
   },
   name: String,
   eco: String,
+  games: [
+  {
+    type: Schema.Types.ObjectId,
+    ref: "Game"
+  }
+],
   // unsure about these:
   history: [],
   future: []
