@@ -178,7 +178,22 @@ def getTotalHistory():
 
 
 getTotalHistory()
-print(all_the_openings)
+# print(all_the_openings)
+
+# filtered_openings = list(filter(lambda x: hasattr(x, 'opening_hist'), all_the_openings)) # Note must convert to list
+
+filtered_openings = []
+
+for k, v in all_the_openings.items():
+    print(v)
+    # Huh...maybe we're only looking at a copy of the unmodified original...?
+    if hasattr(v, 'opening_hist'):
+        filtered_openings.append((k, v))
+
+print(filtered_openings)
+
+
+
 
 
 
