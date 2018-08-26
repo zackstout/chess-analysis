@@ -8,6 +8,7 @@ var db = require('../models');
 
 // ========================================================================================================================
 
+
 function generateDB() {
   console.log('generating db...');
   var stream = fs.createReadStream('games.csv'); // Huh, is this directing from the root?
@@ -25,6 +26,12 @@ function generateDB() {
     var opening_eco = data[13];
 
     // console.log(data);
+
+    // Hmm still creating dupes.... My guess is that it moves on to the next one before finishing the create, so the find doesn't see it, and it creates again.
+    // NICE -- mongoose handles async validation, so we can just use that in Schema!
+    // It's even better: just use {unique: true}
+
+    
     // Create the Line (after checking whether already exists) document:
     db.Opening.find({ moves: opening_text })
     .then(res => {
