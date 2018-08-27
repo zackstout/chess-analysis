@@ -19,8 +19,7 @@ function generateFullDB() {
     var white_rating = data[9];
     var black_rating = data[11];
     var moves = data[12];
-    // var opening = 0;
-    // rated, num_turns, winner, victory_status, white_rating, black_rating, moves, opening
+
     db.Opening.find({ name: data[14] })
     .then(function(res) {
       console.log("res is ...", res[0]._id);
@@ -33,7 +32,7 @@ function generateFullDB() {
         white_rating: white_rating,
         black_rating: black_rating,
         moves: moves,
-        // opening: res[0]._id
+        // opening: res[0]._id -- Remember, mongoose takes care of this for us when we findOneAndUpdate on Openings
       })
       .then(function(result) {
         console.log(result);
@@ -57,7 +56,10 @@ function generateFullDB() {
 
 }
 
+// ========================================================================================================================
 
+// Interesting -- somewhere there is an ordering issue, because games in the Opening "d4 d5 Nf3" also include "Nf3 d5 d4"!!!
+// Are there multiple lines of moves with the same names?
 
 
 function generateDB() {
@@ -76,11 +78,12 @@ function generateDB() {
     var opening_eco = data[13];
 
     // Create the Line (after checking whether already exists) document:
-    db.Opening.find({ moves: opening_text })
-    .then(res => {
-      console.log(res);
-
-      if (res.length === 0) {
+    // Shouldn't be necessary now that we have the unique: true tag:
+    // db.Opening.find({ moves: opening_text })
+    // .then(res => {
+    //   console.log(res);
+    //
+    //   if (res.length === 0) {
         db.Opening.create({
           moves: opening_text,
           name: opening_name,
@@ -92,11 +95,11 @@ function generateDB() {
         .catch(err => {
           console.log(err.message);
         });
-      }
-    })
-    .catch(error => {
-      console.log(error.message);
-    });
+    //   }
+    // })
+    // .catch(error => {
+    //   console.log(error.message);
+    // });
 
   })
   .on("end", function(){
@@ -106,19 +109,29 @@ function generateDB() {
   stream.pipe(csvStream);
 }
 
+// generateDB();
 // generateFullDB();
 
 // ========================================================================================================================
 
-// What?! There are exactly 4000 unique openings?! -- ...No
+router.get('/allGames', (req, res) => {
+  db.Opening.find({})
+  .populate('games')
+  .exec((err, data) => {
+    if (err) res.sendStatus(501);
+    else res.json(data);
+  });
+  // .catch(err => {
+  //   res.sendStatus(501);
+  // });
+});
+
+
+// For the button that pings us:
 router.get('/allLines', (req, res) => {
   db.Opening.find({})
-  .then(data => {
-    res.send(data);
-  })
-  .catch(err => {
-    res.sendStatus(501);
-  });
+  .then(data => res.send(data))
+  .catch(err => res.sendStatus(501));
 });
 
 
@@ -130,9 +143,6 @@ router.get('/allLinesWithOpening/:opening', (req, res) => {
     if (err) res.sendStatus(501);
     else res.send(data);
   });
-  // .catch(err => {
-  //   res.sendStatus(501);
-  // });
 });
 
 
