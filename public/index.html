@@ -28,7 +28,10 @@
     </div>
 
     <div>
-      {{ next_line_out }}
+      <!-- {{ next_line_out }} -->
+      <li v-for="line in next_line_out">
+        {{ line.moves }} | {{ line.name }} | {{ (100*line.percentPlayed).toFixed(1) }} %
+      </li>
     </div>
   </div>
 

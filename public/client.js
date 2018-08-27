@@ -12,7 +12,7 @@ $(document).ready(function() {
       next_line_out: []
     },
     methods: {
-      
+
       getNextLine: function() {
         console.log(this.next_in);
         $.ajax({
@@ -20,7 +20,21 @@ $(document).ready(function() {
           url: "/nextMoves/" + this.next_in.split(' ').join('_')
         })
         .then(res => {
-          console.log(res);
+          // console.log(res);
+
+          var total_games = res.reduce(function(t, n) {
+            // console.log(n.games.length);
+            return t + n.games.length;
+          }, 0);
+
+          // console.log(total_games);
+          res.forEach(r => r.percentPlayed = r.games.length / total_games);
+
+          this.next_line_out = res;
+
+          // console.log(res);
+
+
         });
       },
       // Handles click of the "Get Next Moves" button:

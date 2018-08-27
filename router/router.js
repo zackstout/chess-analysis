@@ -117,6 +117,7 @@ router.get('/nextMoves/:moves', (req, res) => {
   db.Opening.find({
     moves: starts_with
   })
+  // We'll need to populate with games here if we want more than just the references to those games via ID:
   .exec(function(err, data) {
     if (err) res.sendStatus(501);
     else {
