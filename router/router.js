@@ -8,11 +8,7 @@ var db = require('../models');
 
 // ========================================================================================================================
 
-// Interesting -- somewhere there is an ordering issue, because games in the Opening "d4 d5 Nf3" also include "Nf3 d5 d4"!!!
-// Are there multiple lines of moves with the same names?
-// Hmm -- we've solved the uniqueness constraint issue. But we're still getting this problem.
-// The problem seems to be solved by checking against moves: opening_text rather than against name: data[14]
-
+// The strange ordering problem seems to be solved by checking against moves: opening_text rather than against name: data[14]
 function generateFullDB() {
   var stream = fs.createReadStream('games.csv');
   var csvStream = csv()
@@ -105,15 +101,42 @@ function generateDB() {
   stream.pipe(csvStream);
 }
 
+// ========================================================================================================================
+
 // generateDB();
 // generateFullDB();
 
-// ========================================================================================================================
+
+router.get('/nextMoves/:moves', (req, res) => {
+  var moves_arr = req.params.moves.split('_');
+  var moves = moves_arr.join(' ');
+  var moves_len = moves_arr.length;
+
+  var starts_with = new RegExp("^"+ moves);
+
+  db.Opening.find({
+    moves: starts_with
+  })
+  .exec(function(err, data) {
+    if (err) res.sendStatus(501);
+    else {
+        moves = data.filter(move => move.moves.split(' ').length === moves_len + 1);
+        res.send(moves);
+    }
+  });
+
+  // .then(data => {
+  //   // Oh yeah we forgot to ensure its length is only one more than previous one's length:
+  //   res.send(data);
+  // })
+  // .catch(err => res.sendStatus(501));
+});
 
 
 router.get('/allGames', (req, res) => {
   db.Opening.find({})
   .populate('games')
+  // Interesting, I believe this effected a permanent change in the db:
   .exec((err, data) => {
     if (err) res.sendStatus(501);
     else res.json(data);

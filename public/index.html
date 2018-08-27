@@ -16,6 +16,8 @@
   <div id="next-input">
     <input v-model="next_in">
     <button v-on:click="getNext">Get Next Moves</button>
+    <button v-on:click="getNextLine">Get Next Lines!!!</button>
+
 
     <div>
       {{ next_out }}
@@ -23,6 +25,10 @@
 
     <div>
       {{ one_move_opens }}
+    </div>
+
+    <div>
+      {{ next_line_out }}
     </div>
   </div>
 

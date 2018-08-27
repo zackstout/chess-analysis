@@ -8,10 +8,27 @@ $(document).ready(function() {
     data: {
       next_in: 'e4 e5 Nf3',
       next_out: [],
-      one_move_opens: []
+      one_move_opens: [],
+      next_line_out: []
     },
     methods: {
+      
+      getNextLine: function() {
+        console.log(this.next_in);
+        $.ajax({
+          type: "GET",
+          url: "/nextMoves/" + this.next_in.split(' ').join('_')
+        })
+        .then(res => {
+          console.log(res);
+        });
+      },
       // Handles click of the "Get Next Moves" button:
+
+      // PHEW, none of this is needed anymore, we handled it much more elegantly with mongoose:
+      // The only thing we may want to preserve is the while loop
+
+
       getNext: function() {
         console.log(this.next_in);
 
