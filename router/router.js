@@ -8,6 +8,11 @@ var db = require('../models');
 
 // ========================================================================================================================
 
+// Interesting -- somewhere there is an ordering issue, because games in the Opening "d4 d5 Nf3" also include "Nf3 d5 d4"!!!
+// Are there multiple lines of moves with the same names?
+// Hmm -- we've solved the uniqueness constraint issue. But we're still getting this problem.
+// The problem seems to be solved by checking against moves: opening_text rather than against name: data[14]
+
 function generateFullDB() {
   var stream = fs.createReadStream('games.csv');
   var csvStream = csv()
@@ -20,9 +25,15 @@ function generateFullDB() {
     var black_rating = data[11];
     var moves = data[12];
 
-    db.Opening.find({ name: data[14] })
+    // Copied from below:
+    var moves_array = data[12].split(" ");
+    var opening_length = data[15];
+    var opening_array = moves_array.slice(0, opening_length);
+    var opening_text = opening_array.join(" ");
+
+    db.Opening.find({ moves: opening_text })
     .then(function(res) {
-      console.log("res is ...", res[0]._id);
+      // console.log("res is ...", res[0]._id);
 
       db.Game.create({
         rated: rated == 'TRUE' ? true : false,
@@ -53,14 +64,9 @@ function generateFullDB() {
   });
 
   stream.pipe(csvStream);
-
 }
 
 // ========================================================================================================================
-
-// Interesting -- somewhere there is an ordering issue, because games in the Opening "d4 d5 Nf3" also include "Nf3 d5 d4"!!!
-// Are there multiple lines of moves with the same names?
-
 
 function generateDB() {
   console.log('generating db...');
@@ -73,34 +79,24 @@ function generateDB() {
     var opening_length = data[15];
     var opening_array = moves_array.slice(0, opening_length);
     var opening_text = opening_array.join(" ");
-
     var opening_name = data[14];
     var opening_eco = data[13];
 
-    // Create the Line (after checking whether already exists) document:
-    // Shouldn't be necessary now that we have the unique: true tag:
-    // db.Opening.find({ moves: opening_text })
-    // .then(res => {
-    //   console.log(res);
-    //
-    //   if (res.length === 0) {
-        db.Opening.create({
-          moves: opening_text,
-          name: opening_name,
-          eco: opening_eco
-        })
-        .then(line => {
-          console.log(line);
-        })
-        .catch(err => {
-          console.log(err.message);
-        });
-    //   }
-    // })
-    // .catch(error => {
-    //   console.log(error.message);
-    // });
-
+    // Ok it looks like this actually enforces the no-duplicates thing:
+    db.Opening.init()
+    .then(() => {
+      db.Opening.create({
+        moves: opening_text,
+        name: opening_name,
+        eco: opening_eco
+      })
+      .then(line => {
+        console.log(line);
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
+    });
   })
   .on("end", function(){
     console.log("done");
@@ -114,6 +110,7 @@ function generateDB() {
 
 // ========================================================================================================================
 
+
 router.get('/allGames', (req, res) => {
   db.Opening.find({})
   .populate('games')
@@ -121,9 +118,6 @@ router.get('/allGames', (req, res) => {
     if (err) res.sendStatus(501);
     else res.json(data);
   });
-  // .catch(err => {
-  //   res.sendStatus(501);
-  // });
 });
 
 

@@ -15,6 +15,9 @@ $(document).ready(function() {
       getNext: function() {
         console.log(this.next_in);
 
+        // clear out:
+        this.one_move_opens = [];
+
         $.ajax({
           type: "GET",
           url: "/allLines"

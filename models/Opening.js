@@ -22,4 +22,8 @@ var OpeningSchema = new Schema({
   future: []
 });
 
+// Yeah, this seems unneeded:
+// SO's suggestion for telling Mongoose we're "serious" about the unique constraint:
+// OpeningSchema.index({ moves: 1 }, { unique: true });
+
 module.exports = mongoose.model("Opening", OpeningSchema);
