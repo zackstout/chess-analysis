@@ -121,8 +121,21 @@ router.get('/nextMoves/:moves', (req, res) => {
   .exec(function(err, data) {
     if (err) res.sendStatus(501);
     else {
-        moves = data.filter(move => move.moves.split(' ').length === moves_len + 1);
-        res.send(moves);
+        next_moves = data.filter(move => move.moves.split(' ').length === moves_len + 1);
+
+        // Nope this didn't find any more openings after McConnell defense...
+        // let i = 0;
+        // while (i < 10) {
+        //   next_moves = data.filter(move => move.moves.split(' ').length === moves_len + 1);
+        //
+        //   if (next_moves.length > 0) {
+        //     break;
+        //   } else {
+        //     i++;
+        //   }
+        // }
+
+        res.send(next_moves);
     }
   });
 

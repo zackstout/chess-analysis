@@ -12,6 +12,13 @@ $(document).ready(function() {
       next_line_out: []
     },
     methods: {
+      handleClick: function(line) {
+        console.log(line.moves);
+        this.next_in = line.moves;
+        this.getNextLine();
+        // console.log(JSON.stringify(String(ev.target)));
+        // console.log(ev.target.toString().slice(ev.target.toString().indexOf('>'), ev.target.toString().indexOf('|') + 3));
+      },
 
       getNextLine: function() {
         console.log(this.next_in);
