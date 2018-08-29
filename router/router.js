@@ -107,6 +107,29 @@ function generateDB() {
 // generateFullDB();
 
 
+router.get('/nextMovesByGame/:moves', (req, res) => {
+  var moves_arr = req.params.moves.split('_');
+  var moves = moves_arr.join(' ');
+  var moves_len = moves_arr.length;
+
+  var starts_with = new RegExp("^"+ moves);
+
+  db.Game.find({
+    moves: starts_with
+  })
+  // We'll need to populate with games here if we want more than just the references to those games via ID:
+  .exec(function(err, data) {
+    if (err) res.sendStatus(501);
+    else {
+      // console.log(data);
+        // next_moves = data.filter(move => move.moves.split(' ').length === moves_len + 1);
+        // console.log(next_moves);
+
+        res.send(data);
+    }
+  });
+});
+
 router.get('/nextMoves/:moves', (req, res) => {
   var moves_arr = req.params.moves.split('_');
   var moves = moves_arr.join(' ');
@@ -121,8 +144,9 @@ router.get('/nextMoves/:moves', (req, res) => {
   .exec(function(err, data) {
     if (err) res.sendStatus(501);
     else {
+      // console.log(data);
         next_moves = data.filter(move => move.moves.split(' ').length === moves_len + 1);
-
+        // console.log(next_moves);
         // Nope this didn't find any more openings after McConnell defense...
         // let i = 0;
         // while (i < 10) {

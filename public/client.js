@@ -13,9 +13,10 @@ $(document).ready(function() {
     },
     methods: {
       handleClick: function(line) {
-        console.log(line.moves);
-        this.next_in = line.moves;
-        this.getNextLine();
+        console.log(line);
+        // this.next_in = line.moves;
+        this.next_in = line.line;
+        this.getNextLineByGame();
         // console.log(JSON.stringify(String(ev.target)));
         // console.log(ev.target.toString().slice(ev.target.toString().indexOf('>'), ev.target.toString().indexOf('|') + 3));
       },
@@ -44,69 +45,54 @@ $(document).ready(function() {
 
         });
       },
-      // Handles click of the "Get Next Moves" button:
 
-      // PHEW, none of this is needed anymore, we handled it much more elegantly with mongoose:
-      // The only thing we may want to preserve is the while loop
-
-
-      getNext: function() {
+      getNextLineByGame: function() {
         console.log(this.next_in);
-
-        // clear out:
-        this.one_move_opens = [];
-
+        const len = this.next_in.split(' ').length;
         $.ajax({
           type: "GET",
-          url: "/allLines"
+          url: "/nextMovesByGame/" + this.next_in.split(' ').join('_')
         })
-        .then((res) => { // Needs to be an arrow function
+        .then(res => {
+          // console.log(res);
 
-          var start = this.next_in;
-          var start_array = this.next_in.split(" ");
+          result_obj = {};
 
-          var all_with_start = [];
-          var relevant_moves;
+          res.forEach(r => {
+            const moves_arr = r.moves.split(' ');
+            const relevant_move = moves_arr[len];
 
-          // Loop through every opening:
-          res.forEach(d => {
-            var moves_array = d.moves.split(" ");
-            relevant_moves = moves_array.slice(0, start_array.length);
-
-            // Populate one-move openings:
-            if (moves_array.length === 1) {
-              this.one_move_opens.push(moves_array);
+            if (relevant_move in result_obj) {
+              result_obj[relevant_move] ++;
+            } else {
+              result_obj[relevant_move] = 1;
             }
-
-            if (relevant_moves.join(" ") == start) {
-              all_with_start.push(d.moves);
-            }
-
           });
 
-          var next_moves;
-          var i=1;
+          console.log(result_obj);
 
-          // Eh, seems to be working...:
-          while (i < 10) {
-            next_moves = all_with_start.filter(s => {
-              return s.split(" ").length === relevant_moves.length + i;
-            });
+          var all_results = [];
+          var total_games = res.length;
 
-            if (next_moves.length > 0) {
-              break;
-            } else {
-              i++;
-            }
+          for (let key in result_obj) {
+            line = this.next_in + ' ' + key;
+            percentPlayed = result_obj[key] / total_games;
+            all_results.push({line: line, percentPlayed: percentPlayed});
           }
 
-          console.log(next_moves);
 
-          // Funny, it actually *needs* to be an arrow function to preserve reference of 'this':
-          this.next_out = next_moves;
+
+          // console.log(total_games);
+          // res.forEach(r => r.percentPlayed = r.games.length / total_games);
+
+          this.next_line_out = all_results;
+
+          // console.log(res);
+
+
         });
+      },
 
-      }
     }
   });
 

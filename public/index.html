@@ -15,26 +15,18 @@
 
   <div id="next-input">
     <input v-model="next_in">
-    <button v-on:click="getNext">Get Next Moves</button>
-    <button v-on:click="getNextLine">Get Next Lines!!!</button>
-
-
-    <div>
-      {{ next_out }}
-    </div>
+    <!-- <button v-on:click="getNext">Get Next Moves</button> -->
+    <button v-on:click="getNextLineByGame">Get Next Lines!!!</button>
 
     <div>
-      {{ one_move_opens }}
-    </div>
-
-    <div>
-      <!-- {{ next_line_out }} -->
-      <li v-for="line in next_line_out" v-on:click="handleClick(line)">
+      <!-- <li v-for="line in next_line_out" v-on:click="handleClick(line)">
         {{ line.moves }} | {{ line.name }} | {{ (100*line.percentPlayed).toFixed(1) }} %
+      </li> -->
+      <li v-for="line in next_line_out" v-on:click="handleClick(line)">
+        {{ line.line }} | {{ (100*line.percentPlayed).toFixed(1) }} %
       </li>
     </div>
   </div>
-
 
 </body>
 </html>
