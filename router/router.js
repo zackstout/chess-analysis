@@ -171,6 +171,17 @@ router.get('/nextMoves/:moves', (req, res) => {
 });
 
 
+router.get('/openingName/:name', (req, res) => {
+  db.Opening.find({ moves: req.params.name.split('_').join(' ') })
+  .then(data => {
+    // console.log(data);
+    res.json(data);
+  })
+  .catch(err => res.sendStatus(501));
+});
+
+
+
 router.get('/allGames', (req, res) => {
   db.Opening.find({})
   .populate('games')
