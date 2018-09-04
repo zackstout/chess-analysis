@@ -15,20 +15,22 @@
 
   <div id="next-input">
     <input v-model="next_in">
-    <!-- <button v-on:click="getNext">Get Next Moves</button> -->
     <button v-on:click="getNextLineByGame">Get Next Lines!!!</button>
     <br>
+
     <span> {{ next_line_out.toMove }}'s possible moves: </span>
     <br>
     <br>
-    <div>
-      <!-- <li v-for="line in next_line_out" v-on:click="handleClick(line)">
-        {{ line.moves }} | {{ line.name }} | {{ (100*line.percentPlayed).toFixed(1) }} %
-      </li> -->
-      <!-- <div v-on="mouseover: mouseOver">Hover over me!</div> -->
+    <p>Line | Percentage Played | White | Black | Draw | Outcomes (W/B/Draw)</p>
 
+    <div>
       <li v-for="line in next_line_out" v-on:click="handleClick(line)" v-on:mouseover="mouseOver(line)">
-        {{ line.line }} | {{ (100*line.percentPlayed).toFixed(1) }} % | White: {{line.whiteWin}} | Black: {{line.blackWin}}
+        {{ line.line }} |
+        {{ (100*line.percentPlayed).toFixed(1) }} % |
+        W: {{line.whiteWin}} |
+        B: {{line.blackWin}} |
+        Draw: {{line.draw}} |
+        ( {{ (line.whiteWin / line.total).toFixed(2) }} / {{ (line.blackWin / line.total).toFixed(2) }} / {{ (line.draw / line.total).toFixed(2) }} )
       </li>
 
       <p>Total games: {{next_line_out.total_games}}</p>

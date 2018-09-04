@@ -121,15 +121,12 @@ router.get('/nextMovesByGame/:moves', (req, res) => {
   .exec(function(err, data) {
     if (err) res.sendStatus(501);
     else {
-      // console.log(data);
-        // next_moves = data.filter(move => move.moves.split(' ').length === moves_len + 1);
-        // console.log(next_moves);
-
-        res.send(data);
+      res.send(data);
     }
   });
 });
 
+// Not currently in use:
 router.get('/nextMoves/:moves', (req, res) => {
   var moves_arr = req.params.moves.split('_');
   var moves = moves_arr.join(' ');
@@ -144,30 +141,23 @@ router.get('/nextMoves/:moves', (req, res) => {
   .exec(function(err, data) {
     if (err) res.sendStatus(501);
     else {
-      // console.log(data);
-        next_moves = data.filter(move => move.moves.split(' ').length === moves_len + 1);
-        // console.log(next_moves);
-        // Nope this didn't find any more openings after McConnell defense...
-        // let i = 0;
-        // while (i < 10) {
-        //   next_moves = data.filter(move => move.moves.split(' ').length === moves_len + 1);
-        //
-        //   if (next_moves.length > 0) {
-        //     break;
-        //   } else {
-        //     i++;
-        //   }
-        // }
+      next_moves = data.filter(move => move.moves.split(' ').length === moves_len + 1);
 
-        res.send(next_moves);
+      // Nope this didn't find any more openings after McConnell defense...
+      // let i = 0;
+      // while (i < 10) {
+      //   next_moves = data.filter(move => move.moves.split(' ').length === moves_len + 1);
+      //
+      //   if (next_moves.length > 0) {
+      //     break;
+      //   } else {
+      //     i++;
+      //   }
+      // }
+
+      res.send(next_moves);
     }
   });
-
-  // .then(data => {
-  //   // Oh yeah we forgot to ensure its length is only one more than previous one's length:
-  //   res.send(data);
-  // })
-  // .catch(err => res.sendStatus(501));
 });
 
 
@@ -179,7 +169,6 @@ router.get('/openingName/:name', (req, res) => {
   })
   .catch(err => res.sendStatus(501));
 });
-
 
 
 router.get('/allGames', (req, res) => {
